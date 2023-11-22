@@ -1,0 +1,131 @@
+version: '3'
+
+networks:
+  urara-net: 
+    driver: bridge
+
+volumes:
+  mongo_data: 
+    driver: local
+    driver_opts:
+      type: none
+      device: ./db
+      o: bind
+
+services:
+
+  auth: 
+    image: urara-service-auth_user:1
+    restart: on-failure
+    networks:
+      - urara-net
+    depends_on:
+      - mongodb
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./.env
+      - ./.env-auth
+    
+  file-manager:
+    image: urara-service-file_manager:1
+    restart: on-failure
+    networks:
+      - urara-net
+    depends_on:
+      - mongodb
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./.env
+      - ./.env-file-manager
+
+  inventory:
+    image: urara-service-inventory:1
+    restart: on-failure
+    networks:
+      - urara-net
+    depends_on:
+      - mongodb
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./.env
+      - ./.env-inventory
+    
+  payment:
+    image: urara-service-payment:1
+    restart: on-failure
+    networks:
+      - urara-net
+    depends_on:
+      - mongodb
+      - kafka
+    ports:
+      - "3003:3003"
+    env_file:
+      - ./.env
+      - ./.env-payment
+
+  shipment:
+    image: urara-service-shipment:1
+    restart: on-failure
+    networks:
+      - urara-net
+    depends_on:
+      - mongodb
+      - kafka
+    ports:
+      - "3004:3004"
+    env_file:
+      - ./.env
+      - ./.env-shipment
+
+  mongodb:
+    image: mongodb/mongodb-community-server
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - urara-net
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.1
+    restart: on-failure
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+      - ZOOKEEPER_TICK_TIME=2000
+    ports:
+      - "22181:2181"
+    networks:
+      - urara-net
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.1
+    restart: on-failure
+    depends_on:
+      - zookeeper
+    ports:
+      - "29092:29092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://${DOCKER_HOST_IP:-127.0.0.1}:29092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      - KAFKA_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+    networks:
+      - urara-net
+  
+  kafka-manager:
+    image: sheepkiller/kafka-manager:latest
+    restart: on-failure
+    ports:
+      - "9000:9000"
+    environment:
+      - ZK_HOSTS=zookeeper:2181
+    depends_on:
+      - zookeeper  
+    networks:
+      - urara-net
