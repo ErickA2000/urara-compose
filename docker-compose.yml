@@ -83,6 +83,7 @@ services:
 
   mongodb:
     image: mongodb/mongodb-community-server
+    restart: on-failure
     ports:
       - "27018:27017"
     volumes:
