@@ -58,13 +58,15 @@ with your own environment variables or datastore configuration.
 
 ## Backend URARA
 
-For execute the applications of backend
+First you have to create the files with environment variables. Look at the example files. The files are called the same as the example files, you just have to delete the ".example".
+
+For execute the applications of backend.
 
 ```shell
 $ docker compose -f docker-compose.yml up -d
 ```
 
-The applications will be available on port `3000`, `3001`, `3002`, `3003` and `3004`
+The applications will be available on port `3000`, `3001`, `3002`, `3003` and `3004`.
 
 [kong-docs-url]: https://docs.konghq.com/
 [kong-docs-dbless]: https://docs.konghq.com/gateway/latest/production/deployment-topologies/db-less-and-declarative-config/#main

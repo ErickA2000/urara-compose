@@ -1,4 +1,8 @@
 .env
-.env-*
+.env-auth
+.env-file-manager
+.env-inventory
+.env-payment
+.env-shipment
 db
 data_kong

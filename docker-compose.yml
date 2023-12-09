@@ -41,7 +41,7 @@ services:
       - ./.env-file-manager
 
   inventory:
-    image: urara-service-inventory:1
+    image: urara-service-inventory:2
     restart: on-failure
     networks:
       - urara-net
