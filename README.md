@@ -21,7 +21,7 @@ support for running Kong in [db-less][kong-docs-dbless] mode, in which only a Ko
 container is spun up, or with a backing database. The default is db-less mode:
 
 ```shell
-$ docker compose up -d
+$ docker compose -f kong-docker-compose.yml up -d
 ```
 
 This command will result in a single Kong Docker container:
@@ -39,8 +39,7 @@ file. Its format is further described [here][kong-docs-dbless-file].
 You can also run Kong with a backing Postgres database:
 
 ```shell
-$ KONG_DATABASE=postgres docker compose --profile database up -d
-
+$ KONG_DATABASE=postgres docker compose --profile database -f kong-docker-compose.yml up -d
 ```
 
 Which will result in two Docker containers running -- one for Kong itself, and
@@ -59,6 +58,10 @@ with your own environment variables or datastore configuration.
 ## Backend URARA
 
 First you have to create the files with environment variables. Look at the example files. The files are called the same as the example files, you just have to delete the ".example".
+
+### Prerequisites
+
+- Having generated the images of the services.
 
 For execute the applications of backend.
 
